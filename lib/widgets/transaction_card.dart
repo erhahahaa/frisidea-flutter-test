@@ -59,7 +59,7 @@ class TransactionCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color.withValues(alpha: 0.2),
             child: Icon(isIncome ? Icons.add : Icons.remove, color: color),
           ),
           title: Text(
