@@ -70,9 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading data: $e')),
+        );
       }
     }
   }
@@ -82,9 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
       await _dbHelper.deleteTransaction(id);
       _loadData();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Transaction deleted')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction deleted')),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -147,76 +147,153 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pencatatan Keuangan'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.filter_list,
-              color: _hasActiveFilters ? Colors.blue : null,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'My Wallet',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.grey[900],
+                  ),
             ),
-            onPressed: _navigateToFilter,
+            Text(
+              'Track your finances',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[500],
+                  ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: _hasActiveFilters
+                  ? colorScheme.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.tune_rounded,
+                color: _hasActiveFilters
+                    ? colorScheme.primary
+                    : Colors.grey[600],
+              ),
+              onPressed: _navigateToFilter,
+              tooltip: 'Filter',
+            ),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadData,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  BalanceCard(
-                    balance: _balance,
-                    totalIncome: _totalIncome,
-                    totalExpense: _totalExpense,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: BalanceCard(
+                      balance: _balance,
+                      totalIncome: _totalIncome,
+                      totalExpense: _totalExpense,
+                    ),
                   ),
                   if (_hasActiveFilters)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.filter_alt_rounded,
+                                size: 16,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Filters active',
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: _clearFilters,
+                                child: Text(
+                                  'Clear all',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
                       child: Row(
                         children: [
-                          const Icon(Icons.filter_alt, size: 16),
-                          const SizedBox(width: 8),
-                          const Text('Filters active'),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: _clearFilters,
-                            child: const Text('Clear'),
+                          Text(
+                            'Transactions',
+                            style:
+                                Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.grey[800],
+                                    ),
                           ),
+                          const Spacer(),
+                          if (_transactions.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '${_transactions.length}',
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                  Expanded(
-                    child: _transactions.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.receipt_long,
-                                  size: 80,
-                                  color: Colors.grey[300],
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No transactions yet',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Tap + to add your first transaction',
-                                  style: TextStyle(color: Colors.grey[500]),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: _transactions.length,
-                            itemBuilder: (context, index) {
+                  ),
+                  _transactions.isEmpty
+                      ? SliverFillRemaining(
+                          child: _buildEmptyState(context),
+                        )
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
                               final transaction = _transactions[index];
                               return TransactionCard(
                                 transaction: transaction,
@@ -224,14 +301,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                     _deleteTransaction(transaction.id!),
                               );
                             },
+                            childCount: _transactions.length,
                           ),
-                  ),
+                        ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
-      ),
-      floatingActionButton: FloatingActionButton(
+            ),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddTransaction,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text(
+          'Add',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.account_balance_wallet_rounded,
+                size: 44,
+                color: Colors.grey[300],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No transactions yet',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey[700],
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start tracking your finances by\nadding your first transaction',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[500], height: 1.5),
+            ),
+          ],
+        ),
       ),
     );
   }

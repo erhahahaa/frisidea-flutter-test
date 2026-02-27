@@ -15,51 +15,77 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.all(16),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: balanceCardGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF00796B).withValues(alpha: 0.45),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Total Balance',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    letterSpacing: 0.8,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               currencyFormatter.format(balance),
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: balance >= 0 ? incomeColor : expenseColor,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
+                  ),
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: _buildSummaryItem(
-                    context,
-                    'Income',
-                    totalIncome,
-                    incomeColor,
-                    Icons.arrow_downward,
+            const SizedBox(height: 28),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildStat(
+                      context,
+                      'Income',
+                      totalIncome,
+                      Icons.arrow_circle_down_rounded,
+                    ),
                   ),
-                ),
-                Container(width: 1, height: 50, color: Colors.grey[300]),
-                Expanded(
-                  child: _buildSummaryItem(
-                    context,
-                    'Expense',
-                    totalExpense,
-                    expenseColor,
-                    Icons.arrow_upward,
+                  Container(
+                    width: 1,
+                    height: 48,
+                    color: Colors.white.withValues(alpha: 0.25),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: _buildStat(
+                      context,
+                      'Expense',
+                      totalExpense,
+                      Icons.arrow_circle_up_rounded,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -67,11 +93,10 @@ class BalanceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryItem(
+  Widget _buildStat(
     BuildContext context,
     String label,
     double amount,
-    Color color,
     IconData icon,
   ) {
     return Column(
@@ -79,23 +104,25 @@ class BalanceCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 16),
-            const SizedBox(width: 4),
+            Icon(icon, color: Colors.white.withValues(alpha: 0.85), size: 18),
+            const SizedBox(width: 6),
             Text(
               label,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           currencyFormatter.format(amount),
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
