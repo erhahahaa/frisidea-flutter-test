@@ -38,7 +38,9 @@ A simple and intuitive financial tracking application built with Flutter. Track 
 
 ## Screenshots
 
-*Screenshots will be added here*
+| Home Screen | Add Transaction | Filter |
+|:-----------:|:--------------:|:------:|
+| ![Home](docs/screenshot/home_screen.jpg) | ![Add Transaction](docs/screenshot/add_transaction_screen.jpg) | ![Filter](docs/screenshot/filter_screen.jpg) |
 
 ## Prerequisites
 
