@@ -138,7 +138,7 @@ class _FilterScreenState extends State<FilterScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<model.TransactionType?>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.swap_vert),
@@ -168,7 +168,7 @@ class _FilterScreenState extends State<FilterScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String?>(
-              value: _selectedCategory,
+              initialValue: _selectedCategory,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.category),
